@@ -19,4 +19,4 @@ android: deps
 
 ios: deps
 	mkdir -p output/ios
-	gomobile bind -ldflags="-w -s" -target=ios -o output/ios/Openpgp.framework github.com/jerson/openpgp-mobile/openpgp
+	gomobile bind -ldflags="-w -s" -target=ios -o output/ios/Openpgp.framework github.com/node-ua/openpgp-mobile/openpgp
