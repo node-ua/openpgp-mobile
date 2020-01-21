@@ -1,6 +1,7 @@
 package openpgp
 
 import (
+	"encoding/json"
 	"testing"
 )
 
@@ -26,7 +27,8 @@ func TestFastOpenPGP_EncryptMultipleSign(t *testing.T) {
 	publicKey2 := _output2.PublicKey
 	publicKey3 := _output3.PublicKey
 	keys := []string{publicKey2, publicKey3}
-	output, err := openPGP.EncryptWithMultipleKeys(inputMessage, keys)
+	k, _ := json.Marshal(keys)
+	output, err := openPGP.EncryptWithMultipleKeys(inputMessage, string(k))
 	if err != nil {
 		t.Fatal(err)
 	}

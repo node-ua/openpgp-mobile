@@ -2,6 +2,7 @@ package openpgp
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
 
 	"github.com/keybase/go-crypto/openpgp"
@@ -21,7 +22,9 @@ func (o *FastOpenPGP) Encrypt(message, publicKey string) (string, error) {
 	return result, nil
 }
 
-func (o *FastOpenPGP) EncryptWithMultipleKeys(message string, publicKeys []string) (string, error) {
+func (o *FastOpenPGP) EncryptWithMultipleKeys(message string, keys string) (string, error) {
+	var publicKeys []string
+	json.Unmarshal([]byte(keys), &publicKeys)
 	entityList, err := o.readPublicKeys(publicKeys)
 	if err != nil {
 		return "", err
