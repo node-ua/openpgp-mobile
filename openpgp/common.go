@@ -3,10 +3,11 @@ package openpgp
 import (
 	"crypto"
 	"errors"
+	"strings"
+
 	"github.com/keybase/go-crypto/openpgp"
 	"github.com/keybase/go-crypto/openpgp/armor"
 	"github.com/keybase/go-crypto/openpgp/packet"
-	"strings"
 )
 
 var headers = map[string]string{
@@ -133,6 +134,21 @@ func (o *FastOpenPGP) readPublicKey(key string) (openpgp.EntityList, error) {
 
 	return entityList, nil
 }
+
+func (o *FastOpenPGP) readPublicKeys(keys []string) (openpgp.EntityList, error) {
+	var entityLists openpgp.EntityList
+
+	for _, key := range keys {
+		entityList, err := openpgp.ReadArmoredKeyRing(strings.NewReader(key))
+		if err != nil {
+			return entityList, err
+		}
+		entityLists = append(entityLists, entityList[0])
+	}
+
+	return entityLists, nil
+}
+
 func (o *FastOpenPGP) readSignature(message string) (*packet.Signature, error) {
 
 	block, err := armor.Decode(strings.NewReader(message))

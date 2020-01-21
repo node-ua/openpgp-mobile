@@ -2,9 +2,10 @@ package openpgp
 
 import (
 	"bytes"
+	"io/ioutil"
+
 	"github.com/keybase/go-crypto/openpgp"
 	"github.com/keybase/go-crypto/openpgp/armor"
-	"io/ioutil"
 )
 
 func (o *FastOpenPGP) Encrypt(message, publicKey string) (string, error) {
@@ -13,7 +14,26 @@ func (o *FastOpenPGP) Encrypt(message, publicKey string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	result, err := encrypt(message, entityList)
+	if err != nil {
+		return "", err
+	}
+	return result, nil
+}
 
+func (o *FastOpenPGP) EncryptWithMultipleKeys(message string, publicKeys []string) (string, error) {
+	entityList, err := o.readPublicKeys(publicKeys)
+	if err != nil {
+		return "", err
+	}
+	result, err := encrypt(message, entityList)
+	if err != nil {
+		return "", err
+	}
+	return result, nil
+}
+
+func encrypt(message string, entityList []*openpgp.Entity) (string, error) {
 	buf := new(bytes.Buffer)
 	w, err := openpgp.Encrypt(buf, entityList, nil, nil, nil)
 	if err != nil {
@@ -46,7 +66,6 @@ func (o *FastOpenPGP) Encrypt(message, publicKey string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	outputString := pubKeyBuf.String()
 
 	return outputString, nil
